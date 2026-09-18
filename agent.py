@@ -11,7 +11,7 @@ GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 SENDER_EMAIL = os.environ.get("SENDER_EMAIL")
 SENDER_PASSWORD = os.environ.get("SENDER_PASSWORD")
 
-USER_NAME = "Haida Khalid"  # Remplacez par votre nom/prénom si souhaité
+USER_NAME = "Haida Khalid"
 USER_EMAIL = SENDER_EMAIL or "utilisateur@example.com"
 
 # Initialisation de l'API Gemini
@@ -45,7 +45,7 @@ def resolve_dpo_email(company_name):
     return f"privacy@{key.replace(' ', '')}.com"
 
 def generate_rgpd_letter(company, user_name, user_email):
-    """Génère la lettre légale via Gemini 1.5 Flash"""
+    """Génère la lettre légale via Gemini 2.5 Flash"""
     prompt = (
         f"Rédige une demande officielle d'effacement de données personnelles (Article 17 du RGPD) "
         f"adressée au service {company}. La demande concerne l'utilisateur {user_name} "
@@ -63,7 +63,7 @@ def generate_rgpd_letter(company, user_name, user_email):
         )
 
     try:
-        model = genai.GenerativeModel('gemini-1.5-flash')
+        model = genai.GenerativeModel('gemini-2.5-flash')
         response = model.generate_content(prompt)
         return response.text
     except Exception as e:
