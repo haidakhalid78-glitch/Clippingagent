@@ -1,0 +1,12 @@
+Ceci est un exemple de transcript SANS timecode. Remplace ce fichier par le
+vrai transcript de ta vidéo (podcast, interview, live) que tu veux
+transformer en clips. Un simple copier-coller du texte suffit.
+
+Astuce : si tu veux la découpe vidéo 100% automatique (via cut_clips.py),
+utilise plutôt le format avec timecodes, comme dans cet exemple :
+
+[00:00] Bienvenue dans cet épisode, aujourd'hui on parle de productivité.
+[00:45] Alors le vrai problème, c'est que personne ne le dit clairement...
+[01:30] Et là le truc choquant c'est que 90% des gens font l'inverse.
+
+Vois le fichier exemple-horodate.txt pour un exemple complet.
