@@ -57,11 +57,11 @@
         }
 
         h1 {
-            font-size: clamp(2.2rem, 5vw, 3.8rem);
+            font-size: clamp(2rem, 5vw, 3.8rem);
             font-weight: 800;
             text-align: center;
             letter-spacing: -0.03em;
-            line-height: 1.1;
+            line-height: 1.15;
             max-width: 850px;
             margin-bottom: 1.25rem;
         }
@@ -74,7 +74,7 @@
 
         p.subtitle {
             color: var(--text-muted);
-            font-size: 1.15rem;
+            font-size: 1.05rem;
             text-align: center;
             max-width: 600px;
             margin-bottom: 2.5rem;
@@ -88,18 +88,19 @@
             border-radius: 24px;
             width: 100%;
             max-width: 800px;
-            padding: 2rem;
+            padding: 1.5rem;
             box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.8);
         }
 
         .input-wrapper {
             display: flex;
-            gap: 12px;
+            gap: 10px;
             background: rgba(0, 0, 0, 0.4);
             border: 1px solid var(--surface-border);
             border-radius: 16px;
-            padding: 8px 8px 8px 16px;
+            padding: 8px;
             margin-bottom: 1.5rem;
+            flex-direction: row;
         }
 
         .input-wrapper input {
@@ -107,21 +108,48 @@
             border: none;
             outline: none;
             color: #FFF;
-            font-size: 1rem;
+            font-size: 0.95rem;
             flex: 1;
+            padding: 8px 12px;
+            width: 100%;
         }
 
         .btn-cta {
             background: var(--primary);
             color: #FFF;
             border: none;
-            padding: 0.85rem 1.75rem;
+            padding: 0.85rem 1.5rem;
             border-radius: 12px;
             font-weight: 700;
             font-size: 0.95rem;
             cursor: pointer;
             box-shadow: 0 4px 20px var(--primary-glow);
             white-space: nowrap;
+            width: auto;
+        }
+
+        /* Correctif Mobile */
+        @media (max-width: 600px) {
+            .input-wrapper {
+                flex-direction: column;
+                gap: 8px;
+                background: transparent;
+                border: none;
+                padding: 0;
+            }
+
+            .input-wrapper input {
+                background: rgba(0, 0, 0, 0.4);
+                border: 1px solid var(--surface-border);
+                border-radius: 12px;
+                padding: 14px;
+            }
+
+            .btn-cta {
+                width: 100%;
+                padding: 14px;
+                text-align: center;
+            }
         }
 
         .results-list {
@@ -138,10 +166,11 @@
             border: 1px solid var(--surface-border);
             padding: 0.85rem 1.25rem;
             border-radius: 12px;
+            gap: 10px;
         }
 
         .result-info h4 { font-size: 0.95rem; font-weight: 600; }
-        .result-info p { font-size: 0.8rem; color: var(--text-muted); }
+        .result-info p { font-size: 0.8rem; color: var(--text-muted); word-break: break-all; }
 
         .status-tag {
             background: rgba(16, 185, 129, 0.1);
@@ -151,16 +180,18 @@
             border-radius: 20px;
             font-size: 0.75rem;
             font-weight: 600;
+            white-space: nowrap;
         }
 
         .trust-bar {
             display: flex;
-            gap: 2rem;
+            gap: 1.5rem;
             margin-top: 2rem;
             color: var(--text-muted);
             font-size: 0.85rem;
             flex-wrap: wrap;
             justify-content: center;
+            text-align: center;
         }
     </style>
 </head>
