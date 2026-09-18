@@ -2,21 +2,27 @@ import os
 import json
 import smtplib
 from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
 import google.generativeai as genai
 
-# Configuration de Gemini
+# ==========================================
+# 1. Configuration & Variables d'environnement
+# ==========================================
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
-if GEMINI_API_KEY:
-    genai.configure(api_key=GEMINI_API_KEY)
-
-# Configuration SMTP (Envoi d'emails gratuit via Gmail)
-SMTP_SERVER = "smtp.gmail.com"
-SMTP_PORT = 587
 SENDER_EMAIL = os.environ.get("SENDER_EMAIL")
 SENDER_PASSWORD = os.environ.get("SENDER_PASSWORD")
 
-# Dictionnaire de recherche d'adresses DPO / Privacy
+USER_NAME = "Haida Khalid"  # Remplacez par votre nom/prénom si souhaité
+USER_EMAIL = SENDER_EMAIL or "utilisateur@example.com"
+
+# Initialisation de l'API Gemini
+if GEMINI_API_KEY:
+    genai.configure(api_key=GEMINI_API_KEY)
+
+# Serveur SMTP Gmail
+SMTP_SERVER = "smtp.gmail.com"
+SMTP_PORT = 587
+
+# Annuaire des adresses DPO / Privacy
 DPO_DIRECTORY = {
     "canva": "privacy@canva.com",
     "pinterest": "privacy-eu@pinterest.com",
@@ -28,6 +34,9 @@ DPO_DIRECTORY = {
     "x": "privacy@x.com"
 }
 
+# ==========================================
+# 2. Fonctions Utilitaires
+# ==========================================
 def resolve_dpo_email(company_name):
     """Trouve automatiquement l'adresse DPO d'un service"""
     key = company_name.strip().lower()
@@ -37,70 +46,90 @@ def resolve_dpo_email(company_name):
 
 def generate_rgpd_letter(company, user_name, user_email):
     """Génère la lettre légale via Gemini 1.5 Flash"""
-    prompt = f"Rédige une demande officielle d'effacement de données personnelles (Article 17 RGPD) destinée à la société {company}. L'expéditeur est {user_name} ({user_email}). Reste formel et concis."
-    
+    prompt = (
+        f"Rédige une demande officielle d'effacement de données personnelles (Article 17 du RGPD) "
+        f"adressée au service {company}. La demande concerne l'utilisateur {user_name} "
+        f"dont l'adresse e-mail rattachée au compte est {user_email}. "
+        f"Sois formel, précis et mentionne explicitement le droit à l'oubli."
+    )
+
     if not GEMINI_API_KEY:
-        return f"Objet: Demande d'effacement de données (Art. 17 RGPD) - {company}\n\nMadame, Monsieur,\n\nConformément à l'article 17 du RGPD, je vous demande de supprimer toutes mes données personnelles enregistrées sous l'adresse {user_email}.\n\nCordialement,\n{user_name}"
-    
+        return (
+            f"Objet: Demande d'effacement de données (Art. 17 RGPD) - {company}\n\n"
+            f"Madame, Monsieur,\n\n"
+            f"Je vous prie de bien vouloir procéder à la suppression définitive de l'ensemble de mes "
+            f"données personnelles associées à l'adresse {user_email}, conformément à l'Article 17 du RGPD.\n\n"
+            f"Cordialement,\n{user_name}"
+        )
+
     try:
         model = genai.GenerativeModel('gemini-1.5-flash')
-        return model.generate_content(prompt).text
+        response = model.generate_content(prompt)
+        return response.text
     except Exception as e:
-        print(f"Erreur Gemini: {e}")
-        return f"Erreur de génération pour {company}."
+        print(f"Erreur lors de la génération Gemini pour {company}: {e}")
+        return f"Erreur de génération pour {company}: {str(e)}"
 
 def send_email(to_email, subject, body):
-    """Envoie l'e-mail de suppression en réel via SMTP"""
+    """Expédie le courriel via SMTP Gmail"""
     if not SENDER_EMAIL or not SENDER_PASSWORD:
-        print("⚠️ Les identifiants SMTP (SENDER_EMAIL/SENDER_PASSWORD) ne sont pas configurés.")
-        return False
+        return False, "Identifiants SMTP manquants (SENDER_EMAIL / SENDER_PASSWORD)"
 
     try:
-        msg = MIMEMultipart()
-        msg['From'] = SENDER_EMAIL
-        msg['To'] = to_email
-        msg['Subject'] = subject
-        msg.attach(MIMEText(body, 'plain'))
+        msg = MIMEText(body, "plain", "utf-8")
+        msg["Subject"] = subject
+        msg["From"] = SENDER_EMAIL
+        msg["To"] = to_email
 
-        server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
-        server.starttls()
-        server.login(SENDER_EMAIL, SENDER_PASSWORD)
-        server.send_message(msg)
-        server.quit()
-        return True
+        with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
+            server.starttls()
+            server.login(SENDER_EMAIL, SENDER_PASSWORD)
+            server.sendmail(SENDER_EMAIL, [to_email], msg.as_string())
+
+        return True, "Envoyé 🚀"
     except Exception as e:
-        print(f"❌ Échec de l'envoi d'email à {to_email}: {e}")
-        return False
+        print(f"Erreur d'envoi SMTP à {to_email}: {e}")
+        return False, f"Échec d'envoi: {str(e)}"
 
+# ==========================================
+# 3. Exécution Principale
+# ==========================================
 def main():
-    # Informations de test (ou lues depuis un fichier de requête)
-    user_name = "Haida Khalid"
-    user_email = SENDER_EMAIL or "user@example.com"
-    companies_to_clean = ["Canva", "Pinterest"]
+    target_companies = ["Canva", "Pinterest"]
+    cleaning_reports = []
 
-    results = []
+    print("🚀 Démarrage de l'agent d'effacement RGPD...")
 
-    for company in companies_to_clean:
+    for company in target_companies:
         dpo_email = resolve_dpo_email(company)
-        print(f"🔍 Service: {company} | Email DPO identifié: {dpo_email}")
+        print(f"🔍 Traitement de {company} ({dpo_email})...")
 
-        letter_content = generate_rgpd_letter(company, user_name, user_email)
-        subject = f"Demande d'effacement de données (Art. 17 RGPD) - {company}"
+        # 1. Génération de la lettre
+        letter = generate_rgpd_letter(company, USER_NAME, USER_EMAIL)
 
-        sent_status = send_email(dpo_email, subject, letter_content)
+        # 2. Tentative d'envoi SMTP
+        if letter.startswith("Erreur de génération"):
+            status = "Échec (Erreur IA)"
+        else:
+            subject = f"Demande d'effacement de données personnelles (Art. 17 RGPD) - {USER_NAME}"
+            success, status_msg = send_email(dpo_email, subject, letter)
+            status = status_msg if success else f"Généré (Non envoyé : {status_msg})"
 
-        results.append({
+        cleaning_reports.append({
             "company": company,
             "email": dpo_email,
-            "status": "Envoyé 🚀" if sent_status else "Généré (Non envoyé)",
-            "letter": letter_content
+            "status": status,
+            "letter": letter
         })
 
+    # 3. Sauvegarde du rapport dans state/cleaning_report.json
     os.makedirs("state", exist_ok=True)
-    with open("state/cleaning_report.json", "w", encoding="utf-8") as f:
-        json.dump(results, f, ensure_ascii=False, indent=2)
+    report_path = os.path.join("state", "cleaning_report.json")
+    
+    with open(report_path, "w", encoding="utf-8") as f:
+        json.dump(cleaning_reports, f, ensure_ascii=False, indent=2)
 
-    print("=== Rapport mis à jour dans state/cleaning_report.json ===")
+    print(f"=== Rapport mis à jour avec succès dans {report_path} ===")
 
 if __name__ == "__main__":
     main()
