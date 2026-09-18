@@ -45,7 +45,7 @@ def resolve_dpo_email(company_name):
     return f"privacy@{key.replace(' ', '')}.com"
 
 def generate_rgpd_letter(company, user_name, user_email):
-    """Génère la lettre légale via Gemini 2.5 Flash"""
+    """Génère la lettre légale via Gemini 2.0 Flash"""
     prompt = (
         f"Rédige une demande officielle d'effacement de données personnelles (Article 17 du RGPD) "
         f"adressée au service {company}. La demande concerne l'utilisateur {user_name} "
@@ -63,7 +63,8 @@ def generate_rgpd_letter(company, user_name, user_email):
         )
 
     try:
-        model = genai.GenerativeModel('gemini-2.5-flash')
+        # Modèle stable 'gemini-2.0-flash'
+        model = genai.GenerativeModel('gemini-2.0-flash')
         response = model.generate_content(prompt)
         return response.text
     except Exception as e:
