@@ -1,1 +1,14 @@
-
+[
+  {
+    "company": "Canva",
+    "email": "privacy@canva.com",
+    "status": "Généré (Non envoyé)",
+    "letter": "Erreur de génération pour Canva."
+  },
+  {
+    "company": "Pinterest",
+    "email": "privacy-eu@pinterest.com",
+    "status": "Généré (Non envoyé)",
+    "letter": "Erreur de génération pour Pinterest."
+  }
+]
