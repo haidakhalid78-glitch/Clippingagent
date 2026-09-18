@@ -3,12 +3,12 @@
     "company": "Canva",
     "email": "privacy@canva.com",
     "status": "Échec (Erreur IA)",
-    "letter": "Erreur de génération pour Canva: 404 models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods."
+    "letter": "Erreur de génération pour Canva: 404 This model models/gemini-2.5-flash is no longer available to new users. Please update your code to use models/gemini-3.6-flash for the latest features and improvements. We recommend you to use the Interactions API."
   },
   {
     "company": "Pinterest",
     "email": "privacy-eu@pinterest.com",
     "status": "Échec (Erreur IA)",
-    "letter": "Erreur de génération pour Pinterest: 404 models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods."
+    "letter": "Erreur de génération pour Pinterest: 404 This model models/gemini-2.5-flash is no longer available to new users. Please update your code to use models/gemini-3.6-flash for the latest features and improvements. We recommend you to use the Interactions API."
   }
 ]
